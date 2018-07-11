@@ -1,0 +1,6 @@
+package sheldon.com.android.gohome.asynctask;
+
+public interface LoopJListener {
+    void authenticate(String serverResponse);
+    void getToken(String serverResponse);
+}
