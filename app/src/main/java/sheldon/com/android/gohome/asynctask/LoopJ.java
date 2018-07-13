@@ -63,6 +63,7 @@ public class LoopJ {
                     e.printStackTrace();
                 }
                 Log.d(TAG, "onSuccess: " + authStat);
+                Log.d(TAG, "onSuccess: " + token);
 
                 loopjListener.authenticate(authStat);
                 loopjListener.getToken(token);

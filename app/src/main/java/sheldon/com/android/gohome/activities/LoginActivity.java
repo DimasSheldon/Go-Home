@@ -18,7 +18,6 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
     private EditText mUsername, mPassword;
     private Button mButtonLogin;
     private LoopJ client;
-    private String username, password;
     private ProgressDialog progressDialog;
     public String token;
 
@@ -41,8 +40,8 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
     }
 
     public void login(View view) {
-        username = mUsername.getText().toString();
-        password = mPassword.getText().toString();
+        String username = mUsername.getText().toString();
+        String password = mPassword.getText().toString();
 
         if (!validate(username, password)) {
             return;
@@ -62,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
             onLoginSuccess();
 
+            Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
+
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
 
@@ -71,9 +72,10 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
         }
     }
 
+
     @Override
-    public void getToken(String serverResponse) {
-        token = serverResponse;
+    public void getToken(String serverToken) {
+        token = serverToken;
     }
 
     public boolean validate(String username, String password) {
