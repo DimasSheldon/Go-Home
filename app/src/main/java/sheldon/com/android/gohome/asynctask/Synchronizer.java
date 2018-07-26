@@ -17,7 +17,6 @@ import sheldon.com.android.gohome.fragments.MonitorFragment;
 public class Synchronizer {
     private static final String TAG = "SYNC";
     private static final String BASE_URL = "http://103.27.207.134/umon/api/device/getListSensor/"; //192.168.88.15
-
     private SynchronizerListener syncListener;
     private AsyncHttpClient client;
     private ArrayList<String> labels, icons, colors;
