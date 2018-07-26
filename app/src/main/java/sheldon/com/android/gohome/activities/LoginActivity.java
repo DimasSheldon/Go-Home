@@ -4,20 +4,21 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import sheldon.com.android.gohome.asynctask.LoopJ;
-import sheldon.com.android.gohome.asynctask.LoopJListener;
+import sheldon.com.android.gohome.asynctask.Authenticator;
+import sheldon.com.android.gohome.asynctask.AuthenticatorListener;
 import sheldon.com.android.gohome.R;
 
-public class LoginActivity extends AppCompatActivity implements LoopJListener {
+public class LoginActivity extends AppCompatActivity implements AuthenticatorListener {
 
     private EditText mUsername, mPassword;
     private Button mButtonLogin;
-    private LoopJ client;
+    private Authenticator client;
     private ProgressDialog progressDialog;
     public String token;
 
@@ -31,7 +32,7 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
         mPassword = (EditText) findViewById(R.id.input_password);
         mButtonLogin = (Button) findViewById(R.id.btn_login);
 
-        client = new LoopJ(this, this);
+        client = new Authenticator(this, this);
 
         progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -39,29 +40,12 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
         progressDialog.setCanceledOnTouchOutside(false);
     }
 
-    public void login(View view) {
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
-
-        if (!validate(username, password)) {
-            return;
-        }
-
-        mButtonLogin.setEnabled(false);
-
-        client.sendLoginRequest(username, password);
-
-        progressDialog.setMessage("Authenticating...");
-        progressDialog.show();
-    }
-
     @Override
     public void authenticate(String serverResponse) {
         if (serverResponse.equals("SUCCESS")) {
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
             onLoginSuccess();
-
-            Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
+            Log.d("TOKEN", "authenticate: " + token);
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -72,10 +56,9 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
         }
     }
 
-
     @Override
-    public void getToken(String serverToken) {
-        token = serverToken;
+    public void passToken(String token) {
+        this.token = token;
     }
 
     public boolean validate(String username, String password) {
@@ -96,6 +79,21 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
         }
 
         return valid;
+    }
+
+    public void login(View view) {
+        String username = mUsername.getText().toString();
+        String password = mPassword.getText().toString();
+
+        if (!validate(username, password)) {
+            return;
+        }
+
+        mButtonLogin.setEnabled(false);
+
+        client.sendLoginRequest(username, password);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
     }
 
     public void onLoginSuccess() {
