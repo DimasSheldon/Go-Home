@@ -4,11 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import sheldon.com.android.gohome.asynctask.Authenticator;
 import sheldon.com.android.gohome.asynctask.AuthenticatorListener;
@@ -20,7 +23,6 @@ public class LoginActivity extends AppCompatActivity implements AuthenticatorLis
     private Button mButtonLogin;
     private Authenticator client;
     private ProgressDialog progressDialog;
-    public String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,53 +34,12 @@ public class LoginActivity extends AppCompatActivity implements AuthenticatorLis
         mPassword = (EditText) findViewById(R.id.input_password);
         mButtonLogin = (Button) findViewById(R.id.btn_login);
 
-        client = new Authenticator(this, this);
+        client = new Authenticator(this);
 
         progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setCanceledOnTouchOutside(false);
-    }
-
-    @Override
-    public void authenticate(String serverResponse) {
-        if (serverResponse.equals("SUCCESS")) {
-            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
-            onLoginSuccess();
-            Log.d("TOKEN", "authenticate: " + token);
-
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-
-        } else {
-            Toast.makeText(this, serverResponse, Toast.LENGTH_SHORT).show();
-            onLoginFailed();
-        }
-    }
-
-    @Override
-    public void passToken(String token) {
-        this.token = token;
-    }
-
-    public boolean validate(String username, String password) {
-        boolean valid = true;
-
-        if (username.isEmpty() || username.length() < 3) {
-            mUsername.setError("Enter a valid username");
-            valid = false;
-        } else {
-            mUsername.setError(null);
-        }
-
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            mPassword.setError("Between 4 and 10 alphanumeric characters");
-            valid = false;
-        } else {
-            mPassword.setError(null);
-        }
-
-        return valid;
     }
 
     public void login(View view) {
@@ -91,18 +52,72 @@ public class LoginActivity extends AppCompatActivity implements AuthenticatorLis
 
         mButtonLogin.setEnabled(false);
 
-        client.sendLoginRequest(username, password);
+        client.sendLoginRequest(username, convertPassMd5(password));
+
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
+    }
+
+    @Override
+    public void authenticate(String serverResponse) {
+        if (serverResponse.equals("SUCCESS")) {
+            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+            onLoginSuccess();
+
+        } else {
+            Toast.makeText(this, serverResponse, Toast.LENGTH_SHORT).show();
+            onLoginFailed();
+        }
+    }
+
+    public boolean validate(String username, String password) {
+        boolean valid = true;
+
+        if (username.isEmpty() || username.length() < 3) {
+            mUsername.setError("Enter a valid username");
+            valid = false;
+        } else {
+            mUsername.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4) {
+            mPassword.setError("Must be filled");
+            valid = false;
+        } else {
+            mPassword.setError(null);
+        }
+
+        return valid;
     }
 
     public void onLoginSuccess() {
         progressDialog.dismiss();
         mButtonLogin.setEnabled(true);
+        finish();
     }
 
-    public void onLoginFailed() {
+    private void onLoginFailed() {
         progressDialog.dismiss();
         mButtonLogin.setEnabled(true);
+    }
+    private static String convertPassMd5(String pass) {
+        String password = null;
+        MessageDigest mdEnc;
+        try {
+            mdEnc = MessageDigest.getInstance("MD5");
+            mdEnc.update(pass.getBytes(), 0, pass.length());
+            pass = new BigInteger(1, mdEnc.digest()).toString(16);
+            while (pass.length() < 32) {
+                pass = "0" + pass;
+            }
+            password = pass;
+        } catch (NoSuchAlgorithmException e1) {
+            e1.printStackTrace();
+        }
+        return password;
     }
 }

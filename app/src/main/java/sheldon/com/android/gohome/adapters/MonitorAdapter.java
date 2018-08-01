@@ -65,6 +65,7 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
     @Override
     public void onBindViewHolder(WidgetViewHolder widgetViewHolder, int position) {
         Log.d("OnBindMonitor", String.valueOf(position));
+
         widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
         widgetViewHolder.widgetIcon.setImageResource(widgets.get(position).getIcon());
         widgetViewHolder.widgetIcon.setBackgroundColor(widgets.get(position).iconColor());
