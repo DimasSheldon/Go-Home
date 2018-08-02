@@ -47,6 +47,11 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         progressDialog.setIndeterminate(true);
         progressDialog.setCanceledOnTouchOutside(false);
 
+        widgets = new ArrayList<>();
+        mfIcons = new ArrayList<>();
+        mfColors = new ArrayList<>();
+        mfIconColors = new ArrayList<>();
+
         client = new Synchronizer(this);
         mHandler = new Handler();
         mRunnable.run();
@@ -69,7 +74,6 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         rv = (RecyclerView) rootView.findViewById(R.id.rv_monitor);
         rv.setHasFixedSize(true);
 
-        widgets = new ArrayList<>();
 
 //        Synchronizer client = new Synchronizer(this);
 //        client.synchronize(Authenticator.token, Authenticator.uname);
@@ -84,9 +88,6 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
     public void getAttributes(ArrayList<String> labels, ArrayList<String> values, ArrayList<String> icons, ArrayList<String> colors) {
         this.labels = labels;
         this.values = values;
-        mfIcons = new ArrayList<>();
-        mfColors = new ArrayList<>();
-        mfIconColors = new ArrayList<>();
 
         for (String icon : icons) {
             if (icon.equals("ion ion-thermometer")) {
@@ -126,7 +127,7 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         initializeAdapter();
         initializeLLM();
 
-        progressDialog.dismiss();
+//        progressDialog.dismiss();
 
         Log.d("ATTR_LABELS", "MonitorFragment: " + labels);
         Log.d("ATTR_VALUES", "MonitorFragment: " + values);
