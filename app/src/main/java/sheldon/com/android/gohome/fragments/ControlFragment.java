@@ -20,7 +20,7 @@ public class ControlFragment extends Fragment {
     private RecyclerView rv;
 
     public ControlFragment() {
-        // Required empty public constructor
+        // Required empty public constru ctor
     }
 
     @Override

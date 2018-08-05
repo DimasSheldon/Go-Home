@@ -1,6 +1,5 @@
 package sheldon.com.android.gohome.fragments;
 
-import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,8 +13,6 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import sheldon.com.android.gohome.R;
 import sheldon.com.android.gohome.asynctask.Authenticator;
@@ -29,7 +26,6 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
     private RecyclerView rv;
 
     private Synchronizer client;
-    private ProgressDialog progressDialog;
 
     private ArrayList<String> labels, values;
     private ArrayList<Integer> mfIcons, mfColors, mfIconColors;
@@ -42,28 +38,25 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        progressDialog = new ProgressDialog(getActivity(), R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
+        client = new Synchronizer(this);
+        mHandler = new Handler();
 
         widgets = new ArrayList<>();
+        labels = new ArrayList<>();
+        values = new ArrayList<>();
         mfIcons = new ArrayList<>();
         mfColors = new ArrayList<>();
         mfIconColors = new ArrayList<>();
 
-        client = new Synchronizer(this);
-        mHandler = new Handler();
         mRunnable.run();
+//        try {
+//            if () {
+//                mRunnable.wait();
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
-
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateData();
-            mHandler.postDelayed(mRunnable, 5000);
-        }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,11 +67,8 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         rv = (RecyclerView) rootView.findViewById(R.id.rv_monitor);
         rv.setHasFixedSize(true);
 
-
-//        Synchronizer client = new Synchronizer(this);
-//        client.synchronize(Authenticator.token, Authenticator.uname);
-//        progressDialog.setMessage("Synchronizing...");
-//        progressDialog.show();
+        //widget kosong
+        initiateEmptyWidgets();
 
         return rootView;
     }
@@ -123,34 +113,13 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         }
 
         initializeData(labels, values, mfIcons, mfColors, mfIconColors);
-
-        initializeAdapter();
-        initializeLLM();
-
-//        progressDialog.dismiss();
+        initializeAdapterLLM();
 
         Log.d("ATTR_LABELS", "MonitorFragment: " + labels);
         Log.d("ATTR_VALUES", "MonitorFragment: " + values);
         Log.d("ATTR_ICONS", "MonitorFragment: " + mfIcons);
         Log.d("ATTR_COLORS", "MonitorFragment: " + mfColors);
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        try {
-//            timer = new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    updateData();
-//                }
-//            }, 0, 5000);
-//        } catch (IllegalStateException ise) {
-//            Log.i("UPDATE_ERROR", "onResume: " + ise);
-//        }
-//    }
 
     private void initializeData(ArrayList<String> labels,
                                 ArrayList<String> status,
@@ -169,20 +138,36 @@ public class MonitorFragment extends Fragment implements SynchronizerListener {
         }
     }
 
-    private void initializeAdapter() {
+    private void initializeAdapterLLM() {
         MonitorAdapter monitorAdapter = new MonitorAdapter(widgets);
         rv.setAdapter(monitorAdapter);
-    }
 
-    private void initializeLLM() {
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
     }
 
+    private void initiateEmptyWidgets() {
+        widgets.add(new WidgetMonitor("AI Monitoring 1", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        widgets.add(new WidgetMonitor("AI Monitoring 2", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        widgets.add(new WidgetMonitor("AI Monitoring 3", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        widgets.add(new WidgetMonitor("AI Monitoring 4", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        widgets.add(new WidgetMonitor("AI Monitoring 5", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+
+        initializeAdapterLLM();
+    }
+
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateData();
+            mHandler.postDelayed(mRunnable, 5000);
+        }
+    };
+
     public void updateData() {
         client.synchronize(Authenticator.token, Authenticator.uname);
 
-        if (widgets != null && !(widgets.isEmpty())) {
+        if (!(widgets.isEmpty())) {
             widgets.clear();
             labels.clear();
             values.clear();

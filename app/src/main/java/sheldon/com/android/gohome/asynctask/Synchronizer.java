@@ -14,7 +14,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class Synchronizer {
     private static final String TAG = "SYNC";
-    private static final String BASE_URL = "http://103.27.207.134/umon/api/device/getListSensor/"; //192.168.88.15
+    private static final String BASE_URL = "http://103.27.207.134/umon/api/device/getListSensor/";
 
     private SynchronizerListener syncListener;
     private AsyncHttpClient client;
@@ -26,8 +26,8 @@ public class Synchronizer {
     }
 
     public void synchronize(String token, String username) {
-        Log.d("TOKEN", "synchronize: " + token);
         Log.d("USERNAME", "synchronize: " + username);
+        Log.d("TOKEN", "synchronize: " + token);
 
         client.addHeader("tokenid", token);
         client.addHeader("username", username);
