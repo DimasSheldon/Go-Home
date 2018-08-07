@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import sheldon.com.android.gohome.R;
@@ -44,9 +46,9 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
         }
     }
 
-    List<WidgetMonitor> widgets;
+    private ArrayList<WidgetMonitor> widgets;
 
-    public MonitorAdapter(List<WidgetMonitor> widgets) {
+    public MonitorAdapter(ArrayList<WidgetMonitor> widgets) {
         this.widgets = widgets;
     }
 

@@ -1,6 +1,5 @@
 package sheldon.com.android.gohome.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,20 +8,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import sheldon.com.android.gohome.asynctask.Authenticator;
-import sheldon.com.android.gohome.asynctask.AuthenticatorListener;
+import sheldon.com.android.gohome.asynctask.LoopJ;
 import sheldon.com.android.gohome.R;
+import sheldon.com.android.gohome.asynctask.LoopJListener;
 
-public class LoginActivity extends AppCompatActivity implements AuthenticatorListener {
+public class LoginActivity extends AppCompatActivity implements LoopJListener {
 
     private EditText mUsername, mPassword;
+    private String username, password;
     private Button mButtonLogin;
-    private Authenticator client;
-    private ProgressDialog progressDialog;
+    private LoopJ client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,42 +35,37 @@ public class LoginActivity extends AppCompatActivity implements AuthenticatorLis
         mPassword = (EditText) findViewById(R.id.input_password);
         mButtonLogin = (Button) findViewById(R.id.btn_login);
 
-        client = new Authenticator(this);
-
-        progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
+        client = new LoopJ(this, this);
     }
 
     public void login(View view) {
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
+        mButtonLogin.setEnabled(false);
+
+        username = mUsername.getText().toString();
+        password = mPassword.getText().toString();
 
         if (!validate(username, password)) {
             return;
         }
 
-        mButtonLogin.setEnabled(false);
-
-        client.sendLoginRequest(username, convertPassMd5(password));
-
-        progressDialog.setMessage("Authenticating...");
-        progressDialog.show();
+        try {
+            client.sendLoginRequest(username, convertPassMd5(password));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void authenticate(String serverResponse) {
-        if (serverResponse.equals("SUCCESS")) {
-            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
+    public void authenticate(String authStatus) {
+        if (LoopJ.auth.equals("SUCCESS")) {
+            Toast.makeText(LoginActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
 
             onLoginSuccess();
-
         } else {
-            Toast.makeText(this, serverResponse, Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, LoopJ.auth, Toast.LENGTH_SHORT).show();
             onLoginFailed();
         }
     }
@@ -95,15 +91,14 @@ public class LoginActivity extends AppCompatActivity implements AuthenticatorLis
     }
 
     public void onLoginSuccess() {
-        progressDialog.dismiss();
         mButtonLogin.setEnabled(true);
         finish();
     }
 
     private void onLoginFailed() {
-        progressDialog.dismiss();
         mButtonLogin.setEnabled(true);
     }
+
     private static String convertPassMd5(String pass) {
         String password = null;
         MessageDigest mdEnc;
