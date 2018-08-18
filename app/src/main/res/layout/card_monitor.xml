@@ -19,7 +19,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/widget_photo_monitor"
+            android:id="@+id/widget_icon_monitor"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_alignParentLeft="true"
@@ -27,22 +27,22 @@
             android:layout_marginRight="16dp" />
 
         <TextView
-            android:id="@+id/widget_name_monitor"
+            android:id="@+id/widget_label_monitor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="10dp"
-            android:layout_toRightOf="@+id/widget_photo_monitor"
+            android:layout_toRightOf="@+id/widget_icon_monitor"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/widget_status_monitor"
+            android:id="@+id/widget_value_monitor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/widget_name_monitor"
+            android:layout_below="@+id/widget_label_monitor"
             android:layout_marginTop="10dp"
-            android:layout_toRightOf="@+id/widget_photo_monitor"
+            android:layout_toRightOf="@+id/widget_icon_monitor"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -51,9 +51,9 @@
             android:id="@+id/widget_last_update_monitor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/widget_status_monitor"
+            android:layout_below="@+id/widget_value_monitor"
             android:layout_marginTop="10dp"
-            android:layout_toRightOf="@+id/widget_photo_monitor"
+            android:layout_toRightOf="@+id/widget_icon_monitor"
             android:text="**"
             android:textColor="@color/white"
             android:textSize="15sp" />

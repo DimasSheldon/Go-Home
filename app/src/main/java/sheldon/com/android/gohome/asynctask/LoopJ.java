@@ -21,8 +21,8 @@ public class LoopJ {
     private static final String AUTH_URL = "user/submitLogin/";
     private static final String SYNC_URL = "device/getListSensor/";
 
-    private LoopJListener loopJListener;
     private Context context;
+    private LoopJListener loopJListener;
 
     public static String uname, token, auth;
     public static JSONObject syncResponse;
@@ -37,8 +37,7 @@ public class LoopJ {
         this.loopJListener = loopJListener;
     }
 
-
-    public void sendLoginRequest(String username, String hashPassword) throws JSONException {
+    public void sendLoginRequest(String username, String hashPassword){
         RequestParams requestParams = new RequestParams();
         requestParams.put("username", username);
         requestParams.put("hashpassword", hashPassword);
@@ -51,7 +50,6 @@ public class LoopJ {
                 progressDialog = new ProgressDialog(context,
                         R.style.AppTheme_Dark_Dialog);
 
-//                progressDialog.setTitle("Authenticating...");
                 progressDialog.setMessage("Authenticating...");
                 progressDialog.setIndeterminate(false);
                 progressDialog.setCanceledOnTouchOutside(false);
@@ -61,13 +59,11 @@ public class LoopJ {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                auth = "ERROR BRO :(";
                 Log.d(TAG, "onFailure#1: " + errorResponse);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                auth = responseString;
                 Log.d(TAG, "onFailure#2: " + responseString);
             }
 

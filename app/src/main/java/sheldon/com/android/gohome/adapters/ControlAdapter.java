@@ -1,43 +1,53 @@
 package sheldon.com.android.gohome.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import sheldon.com.android.gohome.R;
-import sheldon.com.android.gohome.activities.MainActivity;
 import sheldon.com.android.gohome.content.WidgetControl;
+import sheldon.com.android.gohome.fragments.ControlFragment;
 
 public class ControlAdapter extends RecyclerView.Adapter<ControlAdapter.WidgetViewHolder> {
 
     public static class WidgetViewHolder extends RecyclerView.ViewHolder {
 
         CardView cv;
-        TextView widgetName;
-        TextView widgetStatus;
-        Switch widgetToggleStat;
+        TextView widgetLabel;
+        TextView widgetValue;
+        Switch widgetToggle;
+        View view;
 
         public WidgetViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv_control);
-            widgetName = (TextView) itemView.findViewById(R.id.widget_name_control);
-            widgetStatus = (TextView) itemView.findViewById(R.id.widget_status_control);
-            widgetToggleStat = (Switch) itemView.findViewById(R.id.switch_toggle);
+            widgetLabel = (TextView) itemView.findViewById(R.id.widget_label_control);
+            widgetValue = (TextView) itemView.findViewById(R.id.widget_value_control);
+            widgetToggle = (Switch) itemView.findViewById(R.id.widget_toggle_control);
+
+            view = itemView;
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // item clicked
+                    Toast.makeText(v.getContext(), "Position:" +
+                            Integer.toString(getPosition()), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
-    List<WidgetControl> widgets;
+    private ArrayList<WidgetControl> widgets;
 
-    public ControlAdapter(List<WidgetControl> widgets) {
+    public ControlAdapter(ArrayList<WidgetControl> widgets) {
         this.widgets = widgets;
     }
 
@@ -54,13 +64,18 @@ public class ControlAdapter extends RecyclerView.Adapter<ControlAdapter.WidgetVi
     }
 
     @Override
-    public void onBindViewHolder(final WidgetViewHolder widgetViewHolder, int i) {
-        widgetViewHolder.widgetName.setText(widgets.get(i).getName());
-        widgetViewHolder.widgetStatus.setText(widgets.get(i).getStatus());
-        widgetViewHolder.widgetToggleStat.setOnClickListener(new View.OnClickListener() {
+    public void onBindViewHolder(WidgetViewHolder widgetViewHolder, int position) {
+        Log.d("OnBindControl", String.valueOf(position));
+
+        widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
+        widgetViewHolder.widgetLabel.setText(widgets.get(position).getLabel());
+        widgetViewHolder.widgetValue.setText(widgets.get(position).getValue());
+        widgetViewHolder.widgetToggle.setBackgroundColor(widgets.get(position).iconColor());
+
+        widgetViewHolder.widgetToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Toast.makeText(view.getContext(), "Switched", Toast.LENGTH_SHORT).show();
             }
         });
     }

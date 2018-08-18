@@ -15,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import sheldon.com.android.gohome.R;
 import sheldon.com.android.gohome.asynctask.LoopJ;
@@ -45,10 +44,11 @@ public class MonitorFragment extends Fragment implements LoopJListener {
 
         widgets = new ArrayList<>();
 
-        mfLabels = new ArrayList<>();
-        mfValues = new ArrayList<>();
         icons = new ArrayList<>();
         colors = new ArrayList<>();
+
+        mfLabels = new ArrayList<>();
+        mfValues = new ArrayList<>();
         mfIcons = new ArrayList<>();
         mfColors = new ArrayList<>();
         mfIconColors = new ArrayList<>();
@@ -63,8 +63,11 @@ public class MonitorFragment extends Fragment implements LoopJListener {
         rv = (RecyclerView) rootView.findViewById(R.id.rv_monitor);
         rv.setHasFixedSize(true);
 
-        //widget kosong
+        //empty widgets
         initiateEmptyWidgets();
+
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        rv.setLayoutManager(llm);
 
         return rootView;
     }
@@ -75,21 +78,8 @@ public class MonitorFragment extends Fragment implements LoopJListener {
 
 
     private void getAttributes() {
-        Log.d("LOOPJ_SYNC_RESP", "getAttributes: " + LoopJ.syncResponse);
-
-        try {
-            for (int i = 1; i < LoopJ.syncResponse.length(); i++) {
-                if (LoopJ.syncResponse.has(String.valueOf(i))) {
-                    mfLabels.add(LoopJ.syncResponse.getJSONObject(String.valueOf(i)).getString("label"));
-                    mfValues.add(LoopJ.syncResponse.getJSONObject(String.valueOf(i)).getString("value"));
-                    icons.add(LoopJ.syncResponse.getJSONObject(String.valueOf(i)).getString("icon"));
-                    colors.add(LoopJ.syncResponse.getJSONObject(String.valueOf(i)).getString("color"));
-                }
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        assignAttributes("AI");
+        assignAttributes("DI");
 
         for (String icon : icons) {
             switch (icon) {
@@ -97,7 +87,7 @@ public class MonitorFragment extends Fragment implements LoopJListener {
                     mfIcons.add(R.mipmap.ic_temperature_foreground);
                     break;
                 case "ion ion-android-alert":
-                    mfIcons.add(R.drawable.logo_white);
+//                    mfIcons.add(R.drawable.logo_white);
                     break;
                 case "ion ion-ios-lightbulb":
                     mfIcons.add(R.mipmap.ic_light_bulb_white_foreground);
@@ -134,11 +124,6 @@ public class MonitorFragment extends Fragment implements LoopJListener {
 
         initializeData(mfLabels, mfValues, mfIcons, mfColors, mfIconColors);
         initializeAdapterLLM();
-
-        Log.d("ATTR_LABELS", "MonitorFragment: " + mfLabels);
-        Log.d("ATTR_VALUES", "MonitorFragment: " + mfValues);
-        Log.d("ATTR_ICONS", "MonitorFragment: " + mfIcons);
-        Log.d("ATTR_COLORS", "MonitorFragment: " + mfColors);
     }
 
     private void initializeData(ArrayList<String> labels,
@@ -148,46 +133,33 @@ public class MonitorFragment extends Fragment implements LoopJListener {
                                 ArrayList<Integer> iconColors) {
 
         for (int i = 0; i < labels.size(); i++) {
-            widgets.add(new WidgetMonitor(
-                    labels.get(i),
-                    status.get(i),
-                    icons.get(i),
-                    cvColors.get(i),
-                    iconColors.get(i)
-            ));
+            widgets.add(
+                    new WidgetMonitor(
+                            labels.get(i),
+                            status.get(i),
+                            icons.get(i),
+                            cvColors.get(i),
+                            iconColors.get(i)
+                    ));
         }
     }
 
     private void initializeAdapterLLM() {
         MonitorAdapter monitorAdapter = new MonitorAdapter(widgets);
         rv.setAdapter(monitorAdapter);
-        monitorAdapter.notifyDataSetChanged();
-
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        rv.setLayoutManager(llm);
-    }
-
-    private void initiateEmptyWidgets() {
-        widgets.add(new WidgetMonitor("AI Monitoring 1", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
-        widgets.add(new WidgetMonitor("AI Monitoring 2", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
-        widgets.add(new WidgetMonitor("AI Monitoring 3", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
-        widgets.add(new WidgetMonitor("AI Monitoring 4", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
-        widgets.add(new WidgetMonitor("AI Monitoring 5", "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
-
-        initializeAdapterLLM();
     }
 
     private final Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!LoopJ.isBusy) {
-                Log.d("LOOP", "run: synced");
-                updateData();
-            } else {
+//            if (!LoopJ.isBusy) {
+//                Log.d("LOOP", "run: synced");
+//                updateData();
+//            } else {
 //                Log.d("LOOP", "run: still busy");
-            }
-            mHandler.post(mRunnable);
-//            mHandler.postDelayed(mRunnable, 1000);
+//            }
+////            mHandler.post(mRunnable);
+//            mHandler.postDelayed(mRunnable, 5000);
         }
     };
 
@@ -197,18 +169,49 @@ public class MonitorFragment extends Fragment implements LoopJListener {
             widgets.clear();
             mfLabels.clear();
             mfValues.clear();
-            mfColors.clear();
-            mfIconColors.clear();
+            icons.clear();
+            colors.clear();
             mfIcons.clear();
+            mfIconColors.clear();
+            mfColors.clear();
 
             getAttributes();
+        }
+    }
+
+    private void initiateEmptyWidgets() {
+        for (int i = 1; i <= 5; i++)
+            widgets.add(new WidgetMonitor("Monitoring " + String.valueOf(i), "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        initializeAdapterLLM();
+    }
+
+    private void assignAttributes(String key) {
+        JSONObject jsonObject = LoopJ.syncResponse;
+
+        for (int i = 1; i < jsonObject.length(); i++) {
+            if (jsonObject.has(String.valueOf(i))) {
+
+                try {
+                    JSONObject attribute = jsonObject.getJSONObject(String.valueOf(i));
+
+                    if (attribute.names().toString().contains(key)) {
+                        mfLabels.add(attribute.getString("label" + key));
+                        mfValues.add(attribute.getString("value" + key));
+                        icons.add(attribute.getString("icon" + key));
+                        colors.add(attribute.getString("color" + key));
+                    }
+
+                } catch (JSONException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mRunnable.run();
+//        mRunnable.run();
     }
 
     @Override

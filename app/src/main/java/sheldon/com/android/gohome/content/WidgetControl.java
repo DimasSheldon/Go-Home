@@ -1,37 +1,52 @@
 package sheldon.com.android.gohome.content;
 
 public class WidgetControl {
-    private String name;
-    private String status;
-    private int toggleState;
+    private String label;
+    private String value;
+    private int cvColor, iconColor;
+//    private int toggleState;
 
-    public WidgetControl(String name, String status, int toggleState) {
-        this.name = name;
-        this.status = status;
-        this.toggleState = toggleState;
+    public WidgetControl(String label, String value, int cvColor, int iconColor) {
+        this.label = label;
+        this.cvColor = cvColor;
+        this.iconColor = iconColor;
+        this.value = value;
+//        this.toggleState = toggleState;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getValue() {
+        return value;
     }
 
-    public String getStatus() {
-        return status;
+    public int cvColor() {
+        return cvColor;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public int iconColor() {
+        return iconColor;
     }
 
-    public int getToggleState() {
-        return toggleState;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public void setToggleState(int toggleState) {
-        this.toggleState = toggleState;
+    public void setValue(String value) {
+        this.value = value;
     }
+
+    public void setColor(int color) {
+        this.cvColor = color;
+    }
+
+//    public int getToggleState() {
+//        return toggleState;
+//    }
+//
+//    public void setToggleState(int toggleState) {
+//        this.toggleState = toggleState;
+//    }
 }

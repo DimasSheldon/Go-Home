@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import sheldon.com.android.gohome.R;
 import sheldon.com.android.gohome.content.WidgetMonitor;
@@ -23,16 +21,16 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
 
         CardView cv;
         TextView widgetLabel;
-        TextView widgetStatus;
+        TextView widgetValue;
         ImageView widgetIcon;
         View view;
 
         public WidgetViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv_monitor);
-            widgetLabel = (TextView) itemView.findViewById(R.id.widget_name_monitor);
-            widgetStatus = (TextView) itemView.findViewById(R.id.widget_status_monitor);
-            widgetIcon = (ImageView) itemView.findViewById(R.id.widget_photo_monitor);
+            widgetLabel = (TextView) itemView.findViewById(R.id.widget_label_monitor);
+            widgetValue = (TextView) itemView.findViewById(R.id.widget_value_monitor);
+            widgetIcon = (ImageView) itemView.findViewById(R.id.widget_icon_monitor);
 
             view = itemView;
             view.setOnClickListener(new View.OnClickListener() {
@@ -40,7 +38,7 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
                 public void onClick(View v) {
                     // item clicked
                     Toast.makeText(v.getContext(), "Position:" +
-                                    Integer.toString(getPosition()), Toast.LENGTH_SHORT).show();
+                            Integer.toString(getPosition()), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -72,7 +70,7 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
         widgetViewHolder.widgetIcon.setImageResource(widgets.get(position).getIcon());
         widgetViewHolder.widgetIcon.setBackgroundColor(widgets.get(position).iconColor());
         widgetViewHolder.widgetLabel.setText(widgets.get(position).getLabel());
-        widgetViewHolder.widgetStatus.setText(widgets.get(position).getStatus());
+        widgetViewHolder.widgetValue.setText(widgets.get(position).getValue());
     }
 
     @Override

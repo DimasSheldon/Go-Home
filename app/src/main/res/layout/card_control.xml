@@ -14,34 +14,34 @@
         android:padding="16dp">
 
         <Switch
-            android:id="@+id/switch_toggle"
+            android:id="@+id/widget_toggle_control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp" />
 
         <TextView
-            android:id="@+id/widget_name_control"
+            android:id="@+id/widget_label_control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/switch_toggle"
+            android:layout_toRightOf="@+id/widget_toggle_control"
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+id/widget_status_control"
+            android:id="@+id/widget_value_control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/widget_name_control"
-            android:layout_toRightOf="@+id/switch_toggle"
+            android:layout_below="@+id/widget_label_control"
+            android:layout_toRightOf="@+id/widget_toggle_control"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/widget_last_update_control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/widget_status_control"
-            android:layout_toRightOf="@+id/switch_toggle"
+            android:layout_below="@+id/widget_value_control"
+            android:layout_toRightOf="@+id/widget_toggle_control"
             android:text="**"
             android:textSize="15sp" />
 

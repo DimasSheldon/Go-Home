@@ -1,16 +1,16 @@
 package sheldon.com.android.gohome.content;
 
-
 public class WidgetMonitor {
     private String label;
-    private String status;
+    private String value;
     private int icon, cvColor, iconColor;
 
-    public WidgetMonitor(String label, String status, int icon, int cvColor, int iconColor) {
-        this.label = label;
-        this.status = status;
+    public WidgetMonitor(String label, String value, int icon, int cvColor, int iconColor) {
         this.icon = icon;
+        this.label = label;
         this.cvColor = cvColor;
+        this.iconColor = iconColor;
+        this.value = value;
         this.iconColor = iconColor;
     }
 
@@ -18,8 +18,8 @@ public class WidgetMonitor {
         return label;
     }
 
-    public String getStatus() {
-        return status;
+    public String getValue() {
+        return value;
     }
 
     public int getIcon() {
@@ -38,8 +38,8 @@ public class WidgetMonitor {
         this.label = label;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public void setIcon(int icon) {

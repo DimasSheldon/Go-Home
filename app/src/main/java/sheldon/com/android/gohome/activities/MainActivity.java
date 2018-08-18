@@ -1,8 +1,6 @@
 package sheldon.com.android.gohome.activities;
 
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,27 +21,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sheldon.com.android.gohome.R;
+import sheldon.com.android.gohome.asynctask.LoopJ;
+import sheldon.com.android.gohome.asynctask.LoopJListener;
 import sheldon.com.android.gohome.fragments.ControlFragment;
 import sheldon.com.android.gohome.fragments.MonitorFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LoopJListener {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
-    private Handler mHandler;
+    private LoopJ client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        client = new LoopJ(this, this);
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mHandler = new Handler();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -103,23 +102,16 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.nav_monitoring:
-                Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-
+                viewPager.setCurrentItem(0);
+                break;
+            case R.id.nav_control:
+                viewPager.setCurrentItem(1);
                 break;
             case R.id.nav_management:
-                Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_share:
-                Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-
-                break;
-            case R.id.nav_send:
-                Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-
+//                viewPager.setCurrentItem(1);
                 break;
             case R.id.nav_logout:
-                Toast.makeText(this, String.valueOf(id), Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -133,6 +125,11 @@ public class MainActivity extends AppCompatActivity
         adapter.addFragment(new MonitorFragment(), "MONITOR");
         adapter.addFragment(new ControlFragment(), "CONTROL");
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void authenticate(String authStatus) {
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

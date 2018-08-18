@@ -48,11 +48,7 @@ public class LoginActivity extends AppCompatActivity implements LoopJListener {
             return;
         }
 
-        try {
-            client.sendLoginRequest(username, convertPassMd5(password));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        client.sendLoginRequest(username, convertPassMd5(password));
     }
 
     @Override
