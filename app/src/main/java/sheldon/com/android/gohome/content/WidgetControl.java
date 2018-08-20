@@ -1,17 +1,46 @@
 package sheldon.com.android.gohome.content;
 
+import android.graphics.Color;
+
 public class WidgetControl {
-    private String label;
-    private String value;
+    private String label, value;
     private int cvColor, iconColor;
 //    private int toggleState;
 
-    public WidgetControl(String label, String value, int cvColor, int iconColor) {
+
+    public WidgetControl(String label, String color, String value) {
+        setColor(color);
         this.label = label;
-        this.cvColor = cvColor;
-        this.iconColor = iconColor;
         this.value = value;
-//        this.toggleState = toggleState;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setColor(String color) {
+        switch (color) {
+            case "bg-red":
+                this.cvColor = Color.parseColor("#d32f2f");
+                this.iconColor = Color.parseColor("#9a0007");
+                break;
+            case "bg-blue":
+                this.cvColor = Color.parseColor("#1565c0");
+                this.iconColor = Color.parseColor("#003c8f");
+                break;
+            case "bg-orange":
+                this.cvColor = Color.parseColor("#ff8f00");
+                this.iconColor = Color.parseColor("#c56000");
+                break;
+            default:
+                this.cvColor = Color.GRAY;
+                this.iconColor = Color.DKGRAY;
+                break;
+        }
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getLabel() {
@@ -28,18 +57,6 @@ public class WidgetControl {
 
     public int iconColor() {
         return iconColor;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public void setColor(int color) {
-        this.cvColor = color;
     }
 
 //    public int getToggleState() {

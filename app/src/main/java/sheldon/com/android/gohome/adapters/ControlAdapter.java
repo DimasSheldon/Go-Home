@@ -67,10 +67,14 @@ public class ControlAdapter extends RecyclerView.Adapter<ControlAdapter.WidgetVi
     public void onBindViewHolder(WidgetViewHolder widgetViewHolder, int position) {
         Log.d("OnBindControl", String.valueOf(position));
 
-        widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
+
+        // Label
         widgetViewHolder.widgetLabel.setText(widgets.get(position).getLabel());
-        widgetViewHolder.widgetValue.setText(widgets.get(position).getValue());
+        // Color
+        widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
         widgetViewHolder.widgetToggle.setBackgroundColor(widgets.get(position).iconColor());
+        // Value
+        widgetViewHolder.widgetValue.setText(widgets.get(position).getValue());
 
         widgetViewHolder.widgetToggle.setOnClickListener(new View.OnClickListener() {
             @Override

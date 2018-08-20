@@ -258,3 +258,143 @@ public class ControlAdapter extends RecyclerView.Adapter<ControlAdapter.WidgetVi
         return widgets.size();
     }
 }
+
+
+public static void updateData(JSONObject jsonObject) {
+        widgets.clear();
+
+        mfLabels.clear();
+        mfValues.clear();
+        icons.clear();
+        mfIcons.clear();
+        colors.clear();
+        mfColors.clear();
+        mfIconColors.clear();
+
+        assignAttributes("AI", jsonObject);
+        assignAttributes("DI", jsonObject);
+
+        for (String icon : icons) {
+            switch (icon) {
+                case "ion ion-thermometer":
+                    mfIcons.add(R.mipmap.ic_temperature_foreground);
+                    break;
+                case "ion ion-android-alert":
+//                    mfIcons.add(R.drawable.logo_white);
+                    break;
+                case "ion ion-ios-lightbulb":
+                    mfIcons.add(R.mipmap.ic_light_bulb_white_foreground);
+                    break;
+                case "ion ion-waterdrop":
+                    mfIcons.add(R.mipmap.ic_humidity_foreground);
+                    break;
+                default:
+                    mfIcons.add(R.drawable.logo_white);
+                    break;
+            }
+        }
+
+        for (String color : colors) {
+            switch (color) {
+                case "bg-red":
+                    mfColors.add(Color.parseColor("#d32f2f"));
+                    mfIconColors.add(Color.parseColor("#9a0007"));
+                    break;
+                case "bg-blue":
+                    mfColors.add(Color.parseColor("#1565c0"));
+                    mfIconColors.add(Color.parseColor("#003c8f"));
+                    break;
+                case "bg-orange":
+                    mfColors.add(Color.parseColor("#ff8f00"));
+                    mfIconColors.add(Color.parseColor("#c56000"));
+                    break;
+                default:
+                    mfColors.add(Color.GRAY);
+                    mfIconColors.add(Color.DKGRAY);
+                    break;
+            }
+        }
+
+        initializeData(mfLabels, mfValues, mfIcons, mfColors, mfIconColors);
+
+        initializeAdapterLLM();
+    }
+
+    private static void assignAttributes(String key, JSONObject jsonObject) {
+        for (int i = 0; i < jsonObject.length(); i++) {
+
+            try {
+                JSONObject attribute = jsonObject.getJSONObject(String.valueOf(i));
+
+                if (attribute.names().toString().contains(key)) {
+                    mfLabels.add(attribute.getString("label" + key));
+                    mfValues.add(attribute.getString("value" + key));
+                    icons.add(attribute.getString("icon" + key));
+                    colors.add(attribute.getString("color" + key));
+                }
+                monitorAdapter.notifyDataSetChanged();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private static void initializeData(ArrayList<String> labels,
+                                       ArrayList<String> status,
+                                       ArrayList<Integer> icons,
+                                       ArrayList<Integer> cvColors,
+                                       ArrayList<Integer> iconColors) {
+
+        for (int i = 0; i < labels.size(); i++) {
+            widgets.add(i, new WidgetMonitor(labels.get(i), status.get(i), icons.get(i),
+                    cvColors.get(i), iconColors.get(i)));
+            monitorAdapter.notifyItemChanged(i);
+        }
+    }
+
+    private static void initializeAdapterLLM() {
+        monitorAdapter = new MonitorAdapter(widgets);
+        rv.setAdapter(monitorAdapter);
+    }
+
+    private static void initiateEmptyWidgets() {
+        for (int i = 1; i <= 5; i++)
+            widgets.add(new WidgetMonitor("Monitoring " + String.valueOf(i), "NA", R.drawable.logo_white, Color.GRAY, Color.DKGRAY));
+        initializeAdapterLLM();
+    }
+
+     try {
+                        if (response.get(key) instanceof JSONObject) {
+                            // set data for Analog Input and Digital Input
+                            if (key.contains("AI") || key.contains("DI")) {
+                                JSONObject currData = new JSONObject(response.get(key).toString());
+
+                                if (currData.getString("status").equals("ACTIVE")) {
+                                    countUpdate++;
+                                    MonitorFragment.updateData(currData);
+                                }
+                            } else {
+                                MonitorFragment.removeUnusedWidgets();
+                                MonitorFragment.resetPosition();
+                                countUpdate = 0;
+                            }
+
+                            // set data for Digital Output
+                            if (key.contains("DO")) {
+
+                                JSONObject currData = new JSONObject(response.get(key).toString());
+
+                                if (currData.getString("status").equals("ACTIVE")) {
+                                    countUpdate++;
+                                    ControlFragment.updateData(currData);
+                                }
+                            } else {
+                                ControlFragment.resetPosition();
+                                countUpdate = 0;
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }

@@ -28,9 +28,9 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
         public WidgetViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cv_monitor);
+            widgetIcon = (ImageView) itemView.findViewById(R.id.widget_icon_monitor);
             widgetLabel = (TextView) itemView.findViewById(R.id.widget_label_monitor);
             widgetValue = (TextView) itemView.findViewById(R.id.widget_value_monitor);
-            widgetIcon = (ImageView) itemView.findViewById(R.id.widget_icon_monitor);
 
             view = itemView;
             view.setOnClickListener(new View.OnClickListener() {
@@ -66,10 +66,14 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.WidgetVi
     public void onBindViewHolder(WidgetViewHolder widgetViewHolder, int position) {
         Log.d("OnBindMonitor", String.valueOf(position));
 
-        widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
+        // Icon
         widgetViewHolder.widgetIcon.setImageResource(widgets.get(position).getIcon());
-        widgetViewHolder.widgetIcon.setBackgroundColor(widgets.get(position).iconColor());
+        // Label
         widgetViewHolder.widgetLabel.setText(widgets.get(position).getLabel());
+        // Color
+        widgetViewHolder.cv.setBackgroundColor(widgets.get(position).cvColor());
+        widgetViewHolder.widgetIcon.setBackgroundColor(widgets.get(position).iconColor());
+        // Value
         widgetViewHolder.widgetValue.setText(widgets.get(position).getValue());
     }
 

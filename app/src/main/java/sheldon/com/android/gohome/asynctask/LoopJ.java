@@ -37,7 +37,7 @@ public class LoopJ {
         this.loopJListener = loopJListener;
     }
 
-    public void sendLoginRequest(String username, String hashPassword){
+    public void sendLoginRequest(String username, String hashPassword) {
         RequestParams requestParams = new RequestParams();
         requestParams.put("username", username);
         requestParams.put("hashpassword", hashPassword);
@@ -93,8 +93,8 @@ public class LoopJ {
     }
 
     public void synchronize(String token, String username) {
-        Log.d("USERNAME", "synchronize: " + username);
-        Log.d("TOKEN", "synchronize: " + token);
+//        Log.d("USERNAME", "synchronize: " + username);
+//        Log.d("TOKEN", "synchronize: " + token);
 
 //        LoopJRestClient.addHeader("username", username);
         LoopJRestClient.addHeader("username", "dimas");
@@ -121,8 +121,6 @@ public class LoopJ {
             @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   JSONObject response) {
-                Log.d("SYNC_RESPONSE", "onSuccess: " + response);
-                Log.d("SYNC_RESPONSE_LENGTH", "onSuccess: " + response.length());
                 syncResponse = response;
             }
 

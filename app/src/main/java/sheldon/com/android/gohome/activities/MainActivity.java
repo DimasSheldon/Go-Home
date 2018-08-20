@@ -1,5 +1,6 @@
 package sheldon.com.android.gohome.activities;
 
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,11 +14,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import sheldon.com.android.gohome.R;
@@ -33,12 +39,19 @@ public class MainActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private LoopJ client;
+    private Handler mHandler;
+    private ArrayList<JSONObject> prevData;
+    public static int countUpdateCtrl = 0;
+    public static int countUpdateMntr = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        client = new LoopJ(this, this);
+        client = new LoopJ(this);
+        mHandler = new Handler();
+        prevData = new ArrayList<>();
+
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -159,5 +172,74 @@ public class MainActivity extends AppCompatActivity
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
+    }
+
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!LoopJ.isBusy) {
+                Log.d("MAIN_ACTIVITY", "run: synced");
+                updateFragment();
+            } else {
+                Log.d("MAIN_ACTIVITY", "run: syncing");
+            }
+            mHandler.postDelayed(mRunnable, 1000);
+        }
+    };
+
+    private void updateFragment() {
+
+        client.synchronize(LoopJ.token, LoopJ.uname);
+        JSONObject response = LoopJ.syncResponse;
+
+        if (response != null) {
+
+            JSONObject currData;
+            Iterator<?> keys = response.keys();
+
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                try {
+                    // set data for Analog Input and Digital Input
+                    if (key.contains("AI") || key.contains("DI")) {
+                        currData = new JSONObject(response.get(key).toString());
+
+                        if (currData.getString("status").equals("ACTIVE")) {
+                            countUpdateMntr++;
+                            MonitorFragment.updateData(currData);
+                        }
+                    } else {
+                        currData = new JSONObject(response.get(key).toString());
+
+                        if (currData.getString("status").equals("ACTIVE")) {
+                            countUpdateCtrl++;
+                            ControlFragment.updateData(currData);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            MonitorFragment.removeUnusedWidgets();
+            ControlFragment.removeUnusedWidgets();
+            MonitorFragment.resetPosition();
+            ControlFragment.resetPosition();
+            countUpdateMntr = 0;
+            countUpdateCtrl = 0;
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mRunnable.run();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mHandler.removeCallbacks(mRunnable);
     }
 }
